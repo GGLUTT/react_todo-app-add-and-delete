@@ -3,7 +3,6 @@ import { Todo } from '../../types/Todo';
 import { Error } from '../../types/Error';
 import classNames from 'classnames';
 import { USER_ID, addTodo } from '../../api/todos';
-
 type Props = {
   todos: Todo[];
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
@@ -12,8 +11,8 @@ type Props = {
   setErrorMessage: React.Dispatch<React.SetStateAction<Error>>;
   query: string;
   setQuery: (query: string) => void;
-  isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
+  isInputLoading: boolean;
+  setIsInputLoading: (isLoading: boolean) => void;
   setTempTodo: (tempTodo: null | Todo) => void;
 };
 
@@ -25,13 +24,12 @@ export const Header: React.FC<Props> = ({
   setErrorMessage,
   query,
   setQuery,
-  isLoading,
-  setIsLoading,
+  isInputLoading,
+  setIsInputLoading,
   setTempTodo,
 }) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     if (!query.trim()) {
       setErrorMessage(Error.titleShouldNotBeEmpty);
       setTimeout(() => {
@@ -48,7 +46,7 @@ export const Header: React.FC<Props> = ({
       completed: false,
     };
 
-    setIsLoading(true);
+    setIsInputLoading(true);
     setTempTodo(newTodo);
 
     addTodo(newTodo)
@@ -64,7 +62,7 @@ export const Header: React.FC<Props> = ({
         }, 3000);
       })
       .finally(() => {
-        setIsLoading(false);
+        setIsInputLoading(false);
         setTempTodo(null);
       });
   };
@@ -80,7 +78,6 @@ export const Header: React.FC<Props> = ({
           data-cy="ToggleAllButton"
         />
       )}
-
       <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"
@@ -90,7 +87,7 @@ export const Header: React.FC<Props> = ({
           ref={textField}
           value={query}
           onChange={e => setQuery(e.target.value)}
-          disabled={isLoading}
+          disabled={isInputLoading}
         />
       </form>
     </header>

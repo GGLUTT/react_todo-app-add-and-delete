@@ -3,14 +3,14 @@ import classNames from 'classnames';
 import { Error } from '../../types/Error';
 import { deleteTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
-
 type Props = {
   id: number;
   title: string;
   completed: boolean;
   setErrorMessage: React.Dispatch<React.SetStateAction<Error>>;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  inputIsLoading?: boolean;
+  isInputLoading?: boolean;
+  deletingTodoIds: number[];
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -19,7 +19,8 @@ export const TodoItem: React.FC<Props> = ({
   completed,
   setErrorMessage,
   setTodos,
-  inputIsLoading = false,
+  isInputLoading = false,
+  deletingTodoIds,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -57,11 +58,9 @@ export const TodoItem: React.FC<Props> = ({
           checked={completed}
         />
       </label>
-
       <span data-cy="TodoTitle" className="todo__title">
         {title}
       </span>
-
       {/* Remove button appears only on hover */}
       <button
         onClick={() => {
@@ -73,12 +72,12 @@ export const TodoItem: React.FC<Props> = ({
       >
         ×
       </button>
-
       {/* overlay will cover the todo while it is being deleted or updated */}
       <div
         data-cy="TodoLoader"
         className={classNames('modal', 'overlay', {
-          'is-active': isLoading || inputIsLoading,
+          'is-active':
+            isLoading || isInputLoading || deletingTodoIds.includes(id),
         })}
       >
         <div className="modal-background has-background-white-ter" />

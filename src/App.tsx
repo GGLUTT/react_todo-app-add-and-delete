@@ -6,25 +6,25 @@ import * as todoService from './api/todos';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
 import { Error } from './types/Error';
-import { TodoList } from './components/TodoList/TodoList';
-import { Header } from './components/Header/Header';
-import { Footer } from './components/Footer/Footer';
-import { ErrorNotification } from './components/ErrorNotify/ErrorNotify';
-import { TodoItem } from './components/TodoItem/TodoItem';
+import { TodoList } from './components';
+import { Footer } from './components';
+import { Header } from './components';
+import { ErrorNotification } from './components';
+import { TodoItem } from './components';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [inputIsLoading, setInputIsLoading] = useState(false);
+  const [isInputLoading, setIsInputLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(Error.none);
   const [filter, setFilter] = useState(Filter.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [query, setQuery] = useState('');
+  const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
 
   const textField = useRef<HTMLInputElement>(null);
 
   const completedTodos = [...todos].filter(todo => todo.completed);
   const activeTodos = [...todos].filter(todo => !todo.completed);
-
   const filteredTodos = () => {
     switch (filter) {
       case Filter.Completed:
@@ -35,7 +35,6 @@ export const App: React.FC = () => {
         return todos;
     }
   };
-
   useEffect(() => {
     todoService
       .getTodos()
@@ -49,21 +48,18 @@ export const App: React.FC = () => {
         }, 3000);
       });
   }, []);
-
   useEffect(() => {
     if (textField.current) {
       textField.current.focus();
     }
-  }, [inputIsLoading]);
+  }, [isInputLoading, todos.length]);
 
   if (!todoService.USER_ID) {
     return <UserWarning />;
   }
-
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-
       <div className="todoapp__content">
         <Header
           todos={todos}
@@ -73,8 +69,8 @@ export const App: React.FC = () => {
           setErrorMessage={setErrorMessage}
           query={query}
           setQuery={setQuery}
-          isLoading={inputIsLoading}
-          setIsLoading={setInputIsLoading}
+          isInputLoading={isInputLoading}
+          setIsInputLoading={setIsInputLoading}
           setTempTodo={setTempTodo}
         />
 
@@ -83,6 +79,7 @@ export const App: React.FC = () => {
             todos={filteredTodos()}
             setTodos={setTodos}
             setErrorMessage={setErrorMessage}
+            deletingTodoIds={deletingTodoIds}
           />
 
           {tempTodo && (
@@ -92,23 +89,24 @@ export const App: React.FC = () => {
               completed={tempTodo.completed}
               setTodos={setTodos}
               setErrorMessage={setErrorMessage}
-              inputIsLoading={inputIsLoading}
+              isInputLoading={isInputLoading}
+              deletingTodoIds={deletingTodoIds}
             />
           )}
         </section>
 
         {todos.length > 0 && (
           <Footer
-            todos={todos}
             setTodos={setTodos}
             activeTodos={activeTodos}
+            completedTodos={completedTodos}
             setErrorMessage={setErrorMessage}
             filter={filter}
             setFilter={setFilter}
+            setDeletingTodoIds={setDeletingTodoIds}
           />
         )}
       </div>
-
       <ErrorNotification
         errorMessage={errorMessage}
         setErrorMessage={setErrorMessage}
