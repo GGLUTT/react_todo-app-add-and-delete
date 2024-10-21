@@ -26,6 +26,7 @@ export const Footer: React.FC<Props> = ({
 }) => {
   async function handleClearCompleted() {
     const completedTodoIds = completedTodos.map(todo => todo.id);
+
     setDeletingTodoIds(completedTodoIds);
 
     const deletionPromises = completedTodos.map(todo =>

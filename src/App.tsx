@@ -23,7 +23,7 @@ export const App: React.FC = () => {
 
   const textField = useRef<HTMLInputElement>(null);
 
-  const completedTodos = [...todos].filter(todo => todo.completed);
+  const completedTodos = todos.filter(todo => todo.completed);
   const activeTodos = [...todos].filter(todo => !todo.completed);
   const filteredTodos = () => {
     switch (filter) {
@@ -35,6 +35,7 @@ export const App: React.FC = () => {
         return todos;
     }
   };
+
   useEffect(() => {
     todoService
       .getTodos()
@@ -57,6 +58,7 @@ export const App: React.FC = () => {
   if (!todoService.USER_ID) {
     return <UserWarning />;
   }
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
